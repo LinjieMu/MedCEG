@@ -1,4 +1,4 @@
-# Supplementary Material for MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph
+# MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph
 
 [![huggingface](https://img.shields.io/badge/huggingface-available-yellow)](https://huggingface.co/ICLRAnonymous/MedCEG)
 
