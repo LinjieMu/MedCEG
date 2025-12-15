@@ -112,26 +112,18 @@ We evaluated the reasoning process across five dimensions: Logical Coherence, Fa
 │───📁 code
 │   └───📄 DataExample.jsonl
 ├───📁 code
-│   ├───📁 evaluation
-│   │       📄 ProcessEvaluation.py   # Evaluate reasoning process precision
-│   │
-│   ├───📁 reward                     # Core Reward Logic for VeRL
-│   │       📄 graph_extract.py       # Extract triplets from reasoning text via LLM
-│   │       📄 GraphReward.py         # Calculate graph-based rewards (Node, Struct, Chain)
-│   │       📄 GraphMCQ.py            # Reward entry point for Multiple Choice Questions
-│   │       📄 GraphOpenendQuestion.py# Reward entry point for Open-ended Questions
-│   │       📄 TripletsRecall.py      # Utility for calculating triplet recall
-│   │
-│   └───📁 server
-│           📄 EmbeddingServer.py     # FastAPI server for BGE embeddings
-│
-└───📁 results                        # Raw output files from benchmarks
-        📄 DiagArena.jsonl
-        📄 MedBullets-5op.jsonl
-        📄 MedCase.jsonl
-        📄 MedQA.jsonl
-        📄 MMLU-health.jsonl
-        📄 MMLU-Pro-Health.jsonl
+    ├───📁 evaluation
+    │       📄 ProcessEvaluation.py   # Evaluate reasoning process precision
+    │
+    ├───📁 reward                     # Core Reward Logic for VeRL
+    │       📄 graph_extract.py       # Extract triplets from reasoning text via LLM
+    │       📄 GraphReward.py         # Calculate graph-based rewards (Node, Struct, Chain)
+    │       📄 GraphMCQ.py            # Reward entry point for Multiple Choice Questions
+    │       📄 GraphOpenendQuestion.py# Reward entry point for Open-ended Questions
+    │       📄 TripletsRecall.py      # Utility for calculating triplet recall
+    │
+    └───📁 server
+            📄 EmbeddingServer.py     # FastAPI server for BGE embeddings
 ```
 
 ## 
