@@ -1,59 +1,86 @@
+<div align="center">
+
 # MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph
 
-[![huggingface](https://img.shields.io/badge/huggingface-available-yellow)](https://huggingface.co/ICLRAnonymous/MedCEG) [![arXiv](https://img.shields.io/badge/arXiv-2512.XXXXX-b31b1b.svg)](#)
+[![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Available-yellow)](https://huggingface.co/LinjieMu/MedCEG)
+[![arXiv](https://img.shields.io/badge/arXiv-2512.XXXXX-b31b1b.svg)](https://arxiv.org/abs/2512.XXXXX)
+[![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](./LICENSE)
 
-**MedCEG** is a framework that augments medical language models with clinically valid reasoning pathways by explicitly supervising the reasoning process through a Critical Evidence Graph (CEG). 
+**MedCEG** is a framework that augments medical language models with clinically valid reasoning pathways. It explicitly supervises the reasoning process through a **Critical Evidence Graph (CEG)**, ensuring verifiable and logical medical deductions.
+
+[<img src="images/pipeline.png" width="100%" alt="MedCEG Pipeline">](images/pipeline.png)
+
+</div>
+
+## 📖 Table of Contents
+- [MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph](#medceg-reinforcing-verifiable-medical-reasoning-with-critical-evidence-graph)
+  - [📖 Table of Contents](#-table-of-contents)
+  - [🚀 Model Architecture \& Pipeline](#-model-architecture--pipeline)
+  - [🛠️ Training with VeRL](#️-training-with-verl)
+    - [1. Start the Embedding Service](#1-start-the-embedding-service)
+    - [2. Integration with VeRL](#2-integration-with-verl)
+  - [💻 Inference](#-inference)
+  - [📊 Data Description](#-data-description)
+  - [🏆 Experimental Results](#-experimental-results)
+    - [Main Results](#main-results)
+    - [Reasoning Process Quality](#reasoning-process-quality)
+  - [📁 File Structure](#-file-structure)
+
+---
 
 ## 🚀 Model Architecture & Pipeline
 
-Our approach consists of two main stages:
-1.  **Cold-Start**: We transform structured evidence graphs into natural language to teach the model logical dependencies.
-2.  **Graph-guided Reinforcement Learning**: We use a Critical Evidence Graph (CEG) to provide dense, process-oriented rewards. 
+Our approach consists of two main stages designed to bridge the gap between structured knowledge and natural language reasoning:
 
-![MedCEG Pipeline](images/pipeline.png)
-*Figure: Overview of the MedCEG pipeline including Data Preparation and Graph-guided RL.* 
+1.  **🔥 Cold-Start**: We transform structured evidence graphs into natural language to teach the model logical dependencies and warm up the reasoning capabilities.
+2.  **🕸️ Graph-guided Reinforcement Learning**: We utilize the **Critical Evidence Graph (CEG)** to provide dense, process-oriented rewards, guiding the model towards accurate diagnostic paths.
+
+---
 
 ## 🛠️ Training with VeRL
 
-We utilize [**VeRL**](https://github.com/volcengine/verl) (Volcengine Reinforcement Learning) for the RLHF/RLAIF stage. Our specific **Process Reward** functions provided in the `code/reward` directory.
+We utilize [**VeRL**](https://github.com/volcengine/verl) (Volcengine Reinforcement Learning) for the RLHF/RLAIF stage. Our custom **Process Reward** functions are located in the `code/reward` directory.
 
 ### 1. Start the Embedding Service
 
-To ensure efficient calculation of semantic similarity during training without reloading the model repeatedly, we use a standalone FastAPI server for embeddings. This server manages a pool of `BGE-LARGE-EN-V1.5` models across available GPUs.
+To ensure efficient semantic similarity calculation during training (avoiding repeated model reloading), we deploy a standalone **FastAPI** server. This server manages a pool of `BGE-LARGE-EN-V1.5` models across available GPUs.
 
-**Setup:** Update the `BGE_PATH` variable in `code/server/EmbeddingServer.py` to point to your local model path.
+**Setup:**
+Update the `BGE_PATH` variable in `code/server/EmbeddingServer.py` to point to your local model path.
 
 **Launch:**
-
-```Bash
+```bash
 python code/server/EmbeddingServer.py
 ```
-
-*Note: Ensure this server is accessible to your training nodes (default port 8000).*
+> **Note:** Ensure this server is accessible to your training nodes (default port `8000`).
 
 ### 2. Integration with VeRL
 
-The files in `code/reward/` contain the custom reward functions tailored for MedCEG.
+The files in `code/reward/` implement the custom reward logic tailored for MedCEG:
 
-- **`GraphReward.py`**: Implements the core logic for calculating the composite reward: `Node Coverage`, `Structural Correctness`, and `Chain Completeness`.
-- **`GraphMCQ.py`** & **`GraphOpenendQuestion.py`**: These scripts contain the `compute_score()` function, which acts as the primary interface for the reward model.
+* **`GraphReward.py`**: The core logic for calculating the composite reward, consisting of:
+    * *Node Coverage*
+    * *Structural Correctness*
+    * *Chain Completeness*
+* **`GraphMCQ.py`** & **`GraphOpenendQuestion.py`**: These scripts expose the `compute_score()` function, serving as the primary interface for the reward model for different question types.
 
-The reward function evaluates:
+**The Reward Function evaluates three dimensions:**
+1.  **📝 Format Reward**: Verifies proper usage of `<think>...</think>` tags.
+2.  **🎯 Accuracy Reward**: Validates the final answer against Ground Truth.
+3.  **🧠 Process Reward**: Extracts the reasoning graph from the `<think>` trace and compares it against the Ground Truth CEG using the Embedding Server.
 
-1. **Format Reward**: Checks for proper `<think>...</think>` tag usage.
-2. **Accuracy Reward**: Checks the final answer against Ground Truth.
-3. **Process Reward**: Extracts the graph from the `<think>` trace and compares it against the Ground Truth CEG using the Embedding Server.
+---
 
 ## 💻 Inference
 
-The `Inference.py` script allows you to test the model. Our model weights are open-sourced at [HuggingFace](https://huggingface.co/LinjieMu/MedCEG).
+The `Inference.py` script demonstrates how to generate responses using MedCEG. Our model weights are available on [HuggingFace](https://huggingface.co/LinjieMu/MedCEG).
 
-```Python
+```python
 import transformers
 import torch
 
-# 1. Load the model and tokenizer
-model_id = "ICLRAnonymous/MedCEG"
+# 1. Load Model & Tokenizer
+model_id = "XXX/MedCEG"
 tokenizer = transformers.AutoTokenizer.from_pretrained(model_id)
 model = transformers.AutoModelForCausalLM.from_pretrained(
     model_id,
@@ -61,80 +88,89 @@ model = transformers.AutoModelForCausalLM.from_pretrained(
     device_map="auto",
 )
 
-# 2. Define the question
+# 2. Define Input
 question = "A 78-year-old Caucasian woman presented with..."
 suffix = "\nPut your final answer in \\boxed{}."
 messages = [{"role": "user", "content": question + suffix}]
 
 # 3. Generate
-input_ids = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+input_ids = tokenizer.apply_chat_template(
+    messages, 
+    add_generation_prompt=True, 
+    return_tensors="pt"
+).to(model.device)
+
 outputs = model.generate(input_ids, max_new_tokens=8196, do_sample=False)
 decoded_response = tokenizer.decode(outputs[0][input_ids.shape[-1]:], skip_special_tokens=True)
+
 print(decoded_response)
 ```
 
+---
+
 ## 📊 Data Description
 
-`DataExample.jsonl` contains examples of our constructed data. Key fields include:
+`DataExample.jsonl` contains samples of our constructed training data. Key fields include:
 
-| **Key**                         | **Description**                                              |
-| ------------------------------- | ------------------------------------------------------------ |
-| `question`                      | The input clinical question.                                 |
-| `answer`                        | The ground truth answer.                                     |
-| `reasoning_content`             | The rewritten "thinking" process based on the CEG.           |
-| `graph/triplets`                | The full Evidence Graph (EG).                                |
+| Key | Description |
+| :--- | :--- |
+| `question` | The input clinical question. |
+| `answer` | The ground truth answer. |
+| `reasoning_content` | The rewritten "thinking" process, aligned with the CEG. |
+| `graph/triplets` | The full Evidence Graph (EG). |
 | `graph/core_reasoning_subgraph` | The **Critical Evidence Graph (CEG)** used for reward calculation. |
+
+---
 
 ## 🏆 Experimental Results
 
 ### Main Results
-
-<<<<<<< HEAD
-MedCEG achieves state-of-the-art performance across multiple medical benchmarks, showing significant improvements in both accuracy and reasoning quality.
+MedCEG achieves state-of-the-art performance across multiple medical benchmarks, demonstrating significant improvements in both **accuracy** and **reasoning quality**.
 
 ![main_results](./images/main-results.png)
-
-*Table 1: Comprehensive performance comparison across ID and OOD benchmarks.* 
+> *Table 1: Comprehensive performance comparison across ID (In-Distribution) and OOD (Out-Of-Distribution) benchmarks.*
 
 ### Reasoning Process Quality
+We evaluated the reasoning process across five dimensions: *Logical Coherence, Factual Accuracy, Evidence Faithfulness, Interpretability & Clarity, and Information Utilization*.
 
-We evaluated the reasoning process across five dimensions: Logical Coherence, Factual Accuracy, Evidence Faithfulness, Interpretability & Clarity, and Information Utilization. MedCEG significantly outperforms baselines in producing clinically sound reasoning.
+<div align="center">
+  <img src="./images/process.png" alt="process_results" width="50%" />
+</div>
 
-<img src="./images/process.png" alt="process_results" style="zoom:50%; display: block; margin: 0 auto;" />
+> *Figure 2: Multi-dimensional evaluation showing MedCEG significantly outperforms baselines in producing clinically sound reasoning.*
 
-
-
-*Figure 2: Multi-dimensional evaluation of the reasoning process.* 
+---
 
 ## 📁 File Structure
 
 ```text
-│   📄 ReadMe.md
-│───📁 code
-│   └───📄 DataExample.jsonl
-├───📁 code
-    ├───📁 evaluation
-    │       📄 ProcessEvaluation.py   # Evaluate reasoning process precision
-    │
-    ├───📁 reward                     # Core Reward Logic for VeRL
-    │       📄 graph_extract.py       # Extract triplets from reasoning text via LLM
-    │       📄 GraphReward.py         # Calculate graph-based rewards (Node, Struct, Chain)
-    │       📄 GraphMCQ.py            # Reward entry point for Multiple Choice Questions
-    │       📄 GraphOpenendQuestion.py# Reward entry point for Open-ended Questions
-    │       📄 TripletsRecall.py      # Utility for calculating triplet recall
-    │
-    └───📁 server
-            📄 EmbeddingServer.py     # FastAPI server for BGE embeddings
+.
+├── ReadMe.md
+└── code
+    ├── DataExample.jsonl         # Sample data structure
+    ├── evaluation
+    │   └── ProcessEvaluation.py  # Evaluate reasoning process precision
+    ├── reward                    # Core Reward Logic for VeRL
+    │   ├── graph_extract.py      # Extract triplets from reasoning text via LLM
+    │   ├── GraphReward.py        # Calculate graph-based rewards (Node, Struct, Chain)
+    │   ├── GraphMCQ.py           # Reward entry point for Multiple Choice Questions
+    │   ├── GraphOpenendQuestion.py # Reward entry point for Open-ended Questions
+    │   └── TripletsRecall.py     # Utility for calculating triplet recall
+    └── server
+        └── EmbeddingServer.py    # FastAPI server for BGE embeddings
 ```
 
-## 
-=======
-| Benchmark File          | Correct | Total | Accuracy |
-| ----------------------- | ------- | ----- | -------- |
-| `DiagArena.jsonl`       | 459     | 915   | 50.16    |
-| `MedBullets-5op.jsonl`  | 392     | 616   | 63.64    |
-| `MedCase.jsonl`         | 283     | 897   | 31.55    |
-| `MedQA.jsonl`           | 960     | 1273  | 75.41    |
-| `MMLU-health.jsonl`     | 884     | 1089  | 81.18    |
-| `MMLU-Pro-Health.jsonl` | 509     | 818   | 62.22    |
->>>>>>> 8fd9342115042447242b2a9b2e6a732086185818
+<!-- ---
+
+## 🖊️ Citation
+
+If you find this work useful, please cite our paper:
+
+```bibtex
+@article{medceg2025,
+  title={MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph},
+  author={Linjie Mu, Yannian Gu, Zhongzhen Huang, Yakun Zhu, Shaoting Zhang and Xiaofan Zhang},
+  journal={arXiv preprint arXiv:2512.XXXXX},
+  year={2025}
+}
+``` -->
