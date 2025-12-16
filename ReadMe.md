@@ -3,7 +3,7 @@
 # MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph
 
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Available-yellow)](https://huggingface.co/LinjieMu/MedCEG)
-[![arXiv](https://img.shields.io/badge/arXiv-2512.XXXXX-b31b1b.svg)](https://arxiv.org/abs/2512.XXXXX)
+[![arXiv](https://img.shields.io/badge/arXiv-2512.13510-b31b1b.svg)](http://arxiv.org/abs/2512.13510)
 [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](./LICENSE)
 
 **MedCEG** is a framework that augments medical language models with clinically valid reasoning pathways. It explicitly supervises the reasoning process through a **Critical Evidence Graph (CEG)**, ensuring verifiable and logical medical deductions.
@@ -170,7 +170,7 @@ If you find this work useful, please cite our paper:
 @article{medceg2025,
   title={MedCEG: Reinforcing Verifiable Medical Reasoning with Critical Evidence Graph},
   author={Linjie Mu, Yannian Gu, Zhongzhen Huang, Yakun Zhu, Shaoting Zhang and Xiaofan Zhang},
-  journal={arXiv preprint arXiv:2512.XXXXX},
+  journal={arXiv preprint arXiv:2512.13510},
   year={2025}
 }
 ``` -->
