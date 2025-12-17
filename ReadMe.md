@@ -110,6 +110,8 @@ print(decoded_response)
 
 ## 📊 Data Description
 
+**The complete dataset will be made available upon publication of the paper.**
+
 `DataExample.jsonl` contains samples of our constructed training data. Key fields include:
 
 | Key | Description |
