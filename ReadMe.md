@@ -39,7 +39,7 @@ Our approach consists of two main stages designed to bridge the gap between stru
 
 ## 🛠️ Training with VeRL
 
-We utilize [**VeRL**](https://github.com/volcengine/verl) (Volcengine Reinforcement Learning) for the RLHF/RLAIF stage. Our custom **Process Reward** functions are located in the `code/reward` directory.
+We utilize [**VeRL**](https://github.com/volcengine/verl) (Volcengine Reinforcement Learning) for the RL stage. Our custom **Process Reward** functions are located in the `code/reward` directory.
 
 ### 1. Start the Embedding Service
 
